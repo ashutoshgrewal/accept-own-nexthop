@@ -27,7 +27,7 @@ Abstract
 
    o  routes originated by an ingress VRF at the downstream router are
       imported into the egress VRF at the immediately preceding upstream
-      router.
+      router and
 
    o  next-hop advertised to the upstream router is the address of the
       immediately succeeding downstream router.
@@ -37,12 +37,12 @@ Abstract
 
    This works fine as long as the VRF importing the route received from
    the Controller is on a different router than the VRF that originally
-   exporting the route to the Controller.  This is because BGP protocol
-   [RFC4271] specifies that a router reject routes received with it's
-   own next-hop.  This document proposes a new community the reception
-   of which relaxes this particular rule in the BGP protocol standard
-   and describes at least one way of how next-hops of such routes could
-   be resolved.
+   exported the route to the Controller.  This is because BGP protocol
+   [RFC4271] specifies that a router reject routes received with its own
+   next-hop.  This document proposes a new community the reception of
+   which relaxes this particular rule in the BGP protocol standard and
+   describes at least one way of how next-hops of such routes could be
+   resolved.
 
 Requirements Language
 
@@ -122,7 +122,7 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
    This enables the route reflector to control how a route originated
    within one VRF at the PE is imported into other VRFs at the
    originating PE.  However, the ACCEPT_OWN standard does not specify
-   how the forwarding state next-hop for an accepted route is derived.
+   how the forwarding next-hop for such an accepted route is derived.
    It is understood that once the source VRF is located, the original
    route for this prefix in this source VRF is located and the next-hop
    information of the original route is used as the forwarding state for
@@ -130,25 +130,25 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
    received from the route reflector be originated by a source VRF on
    the receiving router.
 
-   This document proposes a new community BGP accept-own-nexthop whose
-   usage means - 'accept a route with one's own next-hop' (regardless of
-   whether the route was originated by the PE).  Doing so, enables some
-   new useful use cases.  The scope of this community does not mandate
-   the route be originated by a source VRF on the receiving router as
-   was the case in BGP ACCEPT_OWN community attribute.  Also, the usage
-   of this community does not specify how the forwarding next-hop of
-   such a route is derived.  One way to obtain the forwarding
-   information of the received route is described.
+   This document proposes a new community - BGP accept-own-nexthop -
+   whose usage means - 'accept a route with one's own next-hop'
+   (regardless of whether the route was originated by the PE).  Doing
+   so, enables some new useful use cases.  The scope of this community
+   does not mandate the route be originated by a source VRF on the
+   receiving router as was the case in BGP ACCEPT_OWN community
+   attribute.  Also, the usage of this community does not specify how
+   the forwarding next-hop of such a route is derived.  One different
+   approach, than the implicit approach used in BGP ACCEPT_OWN standard,
+   to obtain the forwarding information of the received route is
+   described below.
 
 2.  Use Case
 
-   Let us walk through an example of how a router could redirect traffic
-   that it is receiving in the Ingress VRF, towards a Layer 2 Physical
-   Network Function (PNF) before the traffic exits this router.  A
-   gateway in the form of a router is necessary to have Layer 2 PNFs
+   Let us walk through an example of how a router could redirect
+   traffic, that it is receiving in the Ingress VRF, towards a Layer 2
+   Physical Network Function (PNF) before the traffic exits this router.
+   A gateway in the form of a router is necessary to have Layer 2 PNFs
    become part of a service chain.
-
-
 
 
 
@@ -198,11 +198,12 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
    In the service chaining scenario involving a Layer 2 PNF - a PE (Fig.
    1) advertises a static route - configured inside a VRF (service in-
    VRF) - whose next-hop is the interface that a (transparent layer-2)
-   service instance (viz., firewall, ant-virus system etc.) is connected
-   to.  The prefix for this route is an address that also belongs to the
-   same subnet as this interface's address.  The destination address
-   will be in a different vrf (Service out-VRF) at the PE itself where
-   the serviced traffic coming from the service will be received.
+   service instance (viz., firewall, anti-virus system etc.) is
+   connected to.  The prefix for this route is an address that also
+   belongs to the same subnet as this interface's address.  The
+   destination address will be in a different vrf (Service out-VRF) at
+   the PE itself where the serviced traffic coming from the service will
+   be received.
 
    PE will advertise this route with next-hop as itself and a label that
    identifies the interface that the service is connected to.
@@ -213,11 +214,10 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
    destination, with PE's own address as the next-hop and the above
    label.  The RT that Controller attaches to such a route would allow
    it to be imported to the Ingress VRF.  Such a route will be resolved
-   using the received VPN label to point to whatever next-hop
-   information that is associated with this label locally.  A controller
-   may create multiple such service VRFs on the PE and follow the above
-   procedure for each service to construct a service chain by
-   advertising route with different RTs for the same destination prefix
+   using the received VPN label - that the PE itself advertised - to
+   point to whatever next-hop information that is associated with this
+   label locally.  A controller may create multiple such service VRFs on
+   the PE and follow the above procedure for each service to construct a
 
 
 
@@ -226,8 +226,9 @@ Grewal, et al.           Expires April 17, 2018                 [Page 4]
 Internet-Draft             bgp-accept-own-nhop              October 2017
 
 
-   with different labels, where each label identifies the interface
-   towards that particular service.
+   service chain by advertising route with different RTs for the same
+   destination prefix with different labels, where each label identifies
+   the interface towards that particular service.
 
 3.  accept-own-nexthop community
 
@@ -238,19 +239,20 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
 3.1.  New BGP behavior
 
    A change to default BGP behavior is proposed such that a router that
-   receives a route whose NEXT_HOP value matches one of the addresses
-   configured on itself MAY accept the route if the following are true:
+   receives a route, whose NEXT_HOP value matches one of the addresses
+   configured on itself, MAY accept the route if and only if the
+   following are true:
 
-   o  The route in question carries the accept-own-nexthop community.
+   o  The received route is carrying the accept-own-nexthop community.
 
    o  Processing of the accept-own-nexthop community is enabled by
-      configuration.
+      configuration on the receiving router.
 
 3.2.  Configuration Control
 
    The processing - as defined above - of accept-own-nexthop community
    is disabled by default.  An implementation SHOULD provide a
-   configuration syntax to enable a router to activate the behavior
+   configuration statement to enable a router to activate the behavior
    specified in this document.
 
 4.  IANA Considerations
@@ -262,17 +264,15 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
 
    accept-own-nexthop community allows a router to accept a route with
    it's own next-hop.  If the originator of that route is that router
-   itself and if the router accepts the route advertised by controller
-   to the same VRF from where it was originated and this new route is
-   more preferable than the original route, route oscillations could
-   happen.  The receiving router preferring the route received form the
-   controller would lead to it withdrawing the original route.  This
-   will prompt the Controller to withdraw the re-originated router.
-   This in turn will prompt the PE to re-advertise the original route
-   and the cycle would continue.
+   itself and if the router accepts the received route to the same VRF
+   from where it was originated and if this new route is more preferable
+   than the original route, route oscillations would happen.  That is so
+   because the receiving router preferring the received route would lead
+   to it withdrawing its advertisement for the original route.  This
+   will prompt the Controller to withdraw the re-originated route.  This
+   in turn will prompt the PE to re-advertise the original route and the
+   cycle would continue.
 
-   Since these routes are like any other BGP VPN route, all the
-   vulnerabilities applicable to any other BGP VPN route are also
 
 
 
@@ -282,6 +282,8 @@ Grewal, et al.           Expires April 17, 2018                 [Page 5]
 Internet-Draft             bgp-accept-own-nhop              October 2017
 
 
+   Since these routes are like any other BGP VPN route, all the
+   vulnerabilities applicable to any other BGP VPN route are also
    applicable to these routes.  Such vulnerabilities for BGP VPN routes
    have been described in [RFC4364].
 
@@ -325,8 +327,6 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
               Scudder, "BGP ACCEPT_OWN Community Attribute", RFC 7611,
               DOI 10.17487/RFC7611, August 2015,
               <https://www.rfc-editor.org/info/rfc7611>.
-
-
 
 
 
