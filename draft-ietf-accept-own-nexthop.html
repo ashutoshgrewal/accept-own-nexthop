@@ -1,0 +1,576 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://dublincore.org/documents/2008/08/04/dc-html/">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="robots" content="index,follow" />
+    <meta name="creator" content="rfcmarkup version 1.124" />
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+
+    <link rel="icon" href="" type="image/png" />
+    <link rel="shortcut icon" href="" type="image/png" />
+    <title>draft-ietf-accept-own-nexthop-2.txt - BGP accept-own-nexthop community attribute</title>
+    
+    
+    <style type="text/css">
+	@media only screen 
+	  and (min-width: 992px)
+	  and (max-width: 1199px) {
+	    body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-width: 768px)
+	  and (max-width: 991px) {
+            body { font-size: 14pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-width: 480px)
+	  and (max-width: 767px) {
+            body { font-size: 11pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (max-width: 479px) {
+            body { font-size: 8pt; }
+            div.content { width: 96ex; margin: 0 auto; }
+        }
+	@media only screen 
+	  and (min-device-width : 375px) 
+	  and (max-device-width : 667px) {
+            body { font-size: 9.5pt; }
+            div.content { width: 96ex; margin: 0 1px; }
+        }
+	@media only screen 
+	  and (min-device-width: 1200px) {
+            body { font-size: 10pt; margin: 0 4em; }
+            div.content { width: 96ex; margin: 0; }
+        }
+        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+	    font-weight: bold;
+            line-height: 0pt;
+            display: inline;
+            white-space: pre;
+            font-family: monospace;
+            font-size: 1em;
+	    font-weight: bold;
+        }
+        pre {
+            font-size: 1em;
+            margin-top: 0px;
+            margin-bottom: 0px;
+        }
+	.pre {
+	    white-space: pre;
+	    font-family: monospace;
+	}
+	.header{
+	    font-weight: bold;
+	}
+        .newpage {
+            page-break-before: always;
+        }
+        .invisible {
+            text-decoration: none;
+            color: white;
+        }
+        a.selflink {
+          color: black;
+          text-decoration: none;
+        }
+        @media print {
+            body {
+                font-family: monospace;
+                font-size: 10.5pt;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                font-size: 1em;
+            }
+        
+            a:link, a:visited {
+                color: inherit;
+                text-decoration: none;
+            }
+            .noprint {
+                display: none;
+            }
+        }
+	@media screen {
+	    .grey, .grey a:link, .grey a:visited {
+		color: #777;
+	    }
+            .docinfo {
+                background-color: #EEE;
+            }
+            .top {
+                border-top: 7px solid #EEE;
+            }
+            .bgwhite  { background-color: white; }
+            .bgred    { background-color: #F44; }
+            .bggrey   { background-color: #666; }
+            .bgbrown  { background-color: #840; }            
+            .bgorange { background-color: #FA0; }
+            .bgyellow { background-color: #EE0; }
+            .bgmagenta{ background-color: #F4F; }
+            .bgblue   { background-color: #66F; }
+            .bgcyan   { background-color: #4DD; }
+            .bggreen  { background-color: #4F4; }
+
+            .legend   { font-size: 90%; }
+            .cplate   { font-size: 70%; border: solid grey 1px; }
+	}
+    </style>
+    <!--[if IE]>
+    <style>
+    body {
+       font-size: 13px;
+       margin: 10px 10px;
+    }
+    </style>
+    <![endif]-->
+
+    <script type="text/javascript"><!--
+    function addHeaderTags() {
+	var spans = document.getElementsByTagName("span");
+	for (var i=0; i < spans.length; i++) {
+	    var elem = spans[i];
+	    if (elem) {
+		var level = elem.getAttribute("class");
+                if (level == "h1" || level == "h2" || level == "h3" || level == "h4" || level == "h5" || level == "h6") {
+                    elem.innerHTML = "<"+level+">"+elem.innerHTML+"</"+level+">";		
+                }
+	    }
+	}
+    }
+    var legend_html = "Colour legend:<br />      <table>         <tr><td>Unknown:</td>                   <td><span class='cplate bgwhite'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft:</td>                     <td><span class='cplate bgred'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Informational:</td>             <td><span class='cplate bgorange'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Experimental:</td>              <td><span class='cplate bgyellow'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Best Common Practice:</td>      <td><span class='cplate bgmagenta'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Proposed Standard:</td>         <td><span class='cplate bgblue'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Draft Standard (old designation):</td> <td><span class='cplate bgcyan'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Internet Standard:</td>         <td><span class='cplate bggreen'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Historic:</td>                  <td><span class='cplate bggrey'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>         <tr><td>Obsolete:</td>                  <td><span class='cplate bgbrown'>&nbsp;&nbsp;&nbsp;&nbsp;</span></td></tr>     </table>";
+    function showElem(id) {
+        var elem = document.getElementById(id);
+        elem.innerHTML = eval(id+"_html");
+        elem.style.visibility='visible';
+    }
+    function hideElem(id) {
+        var elem = document.getElementById(id);
+        elem.style.visibility='hidden';        
+        elem.innerHTML = "";
+    }
+    // -->
+    </script>
+</head>
+<body onload="addHeaderTags()">
+  <div class="content">
+   <div style="height: 13px;">
+      <div onmouseover="this.style.cursor='pointer';"
+         onclick="showElem('legend');"
+         onmouseout="hideElem('legend')"
+	 style="height: 6px; position: absolute;"
+         class="pre noprint docinfo "
+         title="Click for colour legend." >                                                                        </div>
+      <div id="legend"
+           class="docinfo noprint pre legend"
+           style="position:absolute; top: 4px; left: 4ex; visibility:hidden; background-color: white; padding: 4px 9px 5px 7px; border: solid #345 1px; "
+           onmouseover="showElem('legend');"
+           onmouseout="hideElem('legend');">
+      </div>
+   </div>
+
+<span class="pre noprint docinfo">                                                                        </span><br />
+<span class="pre noprint docinfo">                                                                        </span><br />
+<span class="pre noprint docinfo">                                                                        </span><br />
+<pre>
+IDR                                                            A. Grewal
+Internet-Draft                                                  N. Sheth
+Intended status: Standards Track                        K. Vairavakkalai
+Expires: April 17, 2018                                 Juniper Networks
+                                                        October 14, 2017
+
+
+               <span class="h1">BGP accept-own-nexthop community attribute</span>
+                    <span class="h1">draft-agrewal-accept-own-nexthop</span>
+
+Abstract
+
+   Various Service chain techniques utilize a Controller to inject
+   Border Gateway Protocol (BGP) Virtual Private Network (VPN) routes to
+   help steer traffic through a given path.  The Controller does so by
+   controlling how these VPN routes are imported into various Virtual
+   Routing and Forwarding (VRF) tables at routers along the desired
+   path.  A couple of such approaches are specified in
+   [<a href="#ref-I-D.ietf-bess-service-chaining">I-D.ietf-bess-service-chaining</a>].  These approaches rely on the
+   Controller modifying the Route Target (RT) list and next-hop of a VPN
+   route received from a downstream router and redistributing these
+   modified routes to upstream routers.  This is done such that -
+
+   o  routes originated by an ingress VRF at the downstream router are
+      imported into the egress VRF at the immediately preceding upstream
+      router.
+
+   o  next-hop advertised to the upstream router is the address of the
+      immediately succeeding downstream router.
+
+   This forces the traffic to flow through a sequence of network
+   functions creating a service chain.
+
+   This works fine as long as the VRF importing the route received from
+   the Controller is on a different router than the VRF that originally
+   exporting the route to the Controller.  This is because BGP protocol
+   [<a href="http://tools.ietf.org/html//rfc4271" title="&quot;A Border Gateway Protocol 4 (BGP-4)&quot;">RFC4271</a>] specifies that a router reject routes received with it's
+   own next-hop.  This document proposes a new community the reception
+   of which relaxes this particular rule in the BGP protocol standard
+   and describes at least one way of how next-hops of such routes could
+   be resolved.
+
+Requirements Language
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+   document are to be interpreted as described in [<a href="http://tools.ietf.org/html//rfc2119" title="&quot;Key words for use in RFCs to Indicate Requirement Levels&quot;">RFC2119</a>].
+
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 1]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-2" id="page-2" href="#page-2" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of <a href="http://tools.ietf.org/html//bcp78">BCP 78</a> and <a href="http://tools.ietf.org/html//bcp79">BCP 79</a>.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at <a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a>.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on April 17, 2018.
+
+Copyright Notice
+
+   Copyright (c) 2017 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to <a href="http://tools.ietf.org/html//bcp78">BCP 78</a> and the IETF Trust's Legal
+   Provisions Relating to IETF Documents
+   (<a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a>) in effect on the date of
+   publication of this document.  Please review these documents
+   carefully, as they describe your rights and restrictions with respect
+   to this document.  Code Components extracted from this document must
+   include Simplified BSD License text as described in Section 4.e of
+   the Trust Legal Provisions and are provided without warranty as
+   described in the Simplified BSD License.
+
+Table of Contents
+
+   <a href="#section-1">1</a>.  Introduction  . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+   <a href="#section-2">2</a>.  Use Case  . . . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-3">3</a>
+   <a href="#section-3">3</a>.  accept-own-nexthop community  . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+     <a href="#section-3.1">3.1</a>.  New BGP behavior  . . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+     <a href="#section-3.2">3.2</a>.  Configuration Control . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+   <a href="#section-4">4</a>.  IANA Considerations . . . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+   <a href="#section-5">5</a>.  Security Considerations . . . . . . . . . . . . . . . . . . .   <a href="#page-5">5</a>
+   <a href="#section-6">6</a>.  Acknowledgements  . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+   <a href="#section-7">7</a>.  References  . . . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+     <a href="#section-7.1">7.1</a>.  Normative References  . . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+     <a href="#section-7.2">7.2</a>.  Informative References  . . . . . . . . . . . . . . . . .   <a href="#page-6">6</a>
+   Authors' Addresses  . . . . . . . . . . . . . . . . . . . . . . .   <a href="#page-7">7</a>
+
+
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 2]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-3" id="page-3" href="#page-3" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+<span class="h2"><a class="selflink" name="section-1" href="#section-1">1</a>.  Introduction</span>
+
+   The BGP ACCEPT_OWN Community Attribute standard [<a href="http://tools.ietf.org/html//rfc7611" title="&quot;BGP ACCEPT_OWN Community Attribute&quot;">RFC7611</a>] defined a
+   technique to let the route reflector modify the RT list of a VPN
+   route and redistribute it back to the originating Provider Edge (PE).
+   This enables the route reflector to control how a route originated
+   within one VRF at the PE is imported into other VRFs at the
+   originating PE.  However, the ACCEPT_OWN standard does not specify
+   how the forwarding state next-hop for an accepted route is derived.
+   It is understood that once the source VRF is located, the original
+   route for this prefix in this source VRF is located and the next-hop
+   information of the original route is used as the forwarding state for
+   the received route.  The standard also mandates that the route
+   received from the route reflector be originated by a source VRF on
+   the receiving router.
+
+   This document proposes a new community BGP accept-own-nexthop whose
+   usage means - 'accept a route with one's own next-hop' (regardless of
+   whether the route was originated by the PE).  Doing so, enables some
+   new useful use cases.  The scope of this community does not mandate
+   the route be originated by a source VRF on the receiving router as
+   was the case in BGP ACCEPT_OWN community attribute.  Also, the usage
+   of this community does not specify how the forwarding next-hop of
+   such a route is derived.  One way to obtain the forwarding
+   information of the received route is described.
+
+<span class="h2"><a class="selflink" name="section-2" href="#section-2">2</a>.  Use Case</span>
+
+   Let us walk through an example of how a router could redirect traffic
+   that it is receiving in the Ingress VRF, towards a Layer 2 Physical
+   Network Function (PNF) before the traffic exits this router.  A
+   gateway in the form of a router is necessary to have Layer 2 PNFs
+   become part of a service chain.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 3]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-4" id="page-4" href="#page-4" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+                +--------------------------------------+
+                | Layer 2 Physical network function    |
+                +-------------^------------|-----------+
+                              |            |
+                              |            |
+                              |            |
+              +---------------|------------|---------------+
+              |               |            |               |
+              |          +----|----+  +----v----+          |
+              |          | Service |  | Service |          |
+              |       +--&gt;  in-VRF |  | out-VRF ---+       |
+              |       |  |         |  |         |  |       |
+              |       |  +---------+  +---------+  |       |
+              |       |                            |       |
+              |  +----|----+                  +----v----+  |
+              |  | Ingress |                  | Egress  |  |
+        ---------&gt;  VRF    |                  |   VRF   ---------&gt;
+              |  |         |                  |         |  |
+              |  +---------+                  +---------+  |
+              |                                            |
+              |                   Router                   |
+              +--------------------------------------------+
+
+              Figure 1: A Layer 2 PNF as part of service chain
+
+   In the service chaining scenario involving a Layer 2 PNF - a PE (Fig.
+   1) advertises a static route - configured inside a VRF (service in-
+   VRF) - whose next-hop is the interface that a (transparent layer-2)
+   service instance (viz., firewall, ant-virus system etc.) is connected
+   to.  The prefix for this route is an address that also belongs to the
+   same subnet as this interface's address.  The destination address
+   will be in a different vrf (Service out-VRF) at the PE itself where
+   the serviced traffic coming from the service will be received.
+
+   PE will advertise this route with next-hop as itself and a label that
+   identifies the interface that the service is connected to.
+
+   A Controller acting as an extended route reflector could now steer
+   the traffic for a particular destination - for which the controller
+   wants the traffic to be serviced - by sending a VPN route for that
+   destination, with PE's own address as the next-hop and the above
+   label.  The RT that Controller attaches to such a route would allow
+   it to be imported to the Ingress VRF.  Such a route will be resolved
+   using the received VPN label to point to whatever next-hop
+   information that is associated with this label locally.  A controller
+   may create multiple such service VRFs on the PE and follow the above
+   procedure for each service to construct a service chain by
+   advertising route with different RTs for the same destination prefix
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 4]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-5" id="page-5" href="#page-5" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+   with different labels, where each label identifies the interface
+   towards that particular service.
+
+<span class="h2"><a class="selflink" name="section-3" href="#section-3">3</a>.  accept-own-nexthop community</span>
+
+   A new well-known BGP community in the First Come First Served
+   [<a href="http://tools.ietf.org/html//rfc5226" title="&quot;Guidelines for Writing an IANA Considerations Section in RFCs&quot;">RFC5226</a>] range called accept-own-nexthop has been assigned value of
+   0XFFF008 by IANA.
+
+<span class="h3"><a class="selflink" name="section-3.1" href="#section-3.1">3.1</a>.  New BGP behavior</span>
+
+   A change to default BGP behavior is proposed such that a router that
+   receives a route whose NEXT_HOP value matches one of the addresses
+   configured on itself MAY accept the route if the following are true:
+
+   o  The route in question carries the accept-own-nexthop community.
+
+   o  Processing of the accept-own-nexthop community is enabled by
+      configuration.
+
+<span class="h3"><a class="selflink" name="section-3.2" href="#section-3.2">3.2</a>.  Configuration Control</span>
+
+   The processing - as defined above - of accept-own-nexthop community
+   is disabled by default.  An implementation SHOULD provide a
+   configuration syntax to enable a router to activate the behavior
+   specified in this document.
+
+<span class="h2"><a class="selflink" name="section-4" href="#section-4">4</a>.  IANA Considerations</span>
+
+   IANA has assigned the value 0xFFFF0008 in the "BGP Well-known
+   Communities" registry for the accept-own-nexthop community.
+
+<span class="h2"><a class="selflink" name="section-5" href="#section-5">5</a>.  Security Considerations</span>
+
+   accept-own-nexthop community allows a router to accept a route with
+   it's own next-hop.  If the originator of that route is that router
+   itself and if the router accepts the route advertised by controller
+   to the same VRF from where it was originated and this new route is
+   more preferable than the original route, route oscillations could
+   happen.  The receiving router preferring the route received form the
+   controller would lead to it withdrawing the original route.  This
+   will prompt the Controller to withdraw the re-originated router.
+   This in turn will prompt the PE to re-advertise the original route
+   and the cycle would continue.
+
+   Since these routes are like any other BGP VPN route, all the
+   vulnerabilities applicable to any other BGP VPN route are also
+
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 5]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-6" id="page-6" href="#page-6" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+   applicable to these routes.  Such vulnerabilities for BGP VPN routes
+   have been described in [<a href="http://tools.ietf.org/html//rfc4364" title="&quot;BGP/MPLS IP Virtual Private Networks (VPNs)&quot;">RFC4364</a>].
+
+<span class="h2"><a class="selflink" name="section-6" href="#section-6">6</a>.  Acknowledgements</span>
+
+   The authors would like to thank John Scudder, Jeff Haas and Minto
+   Jeyanatha for their valuable comments and suggestions.
+
+<span class="h2"><a class="selflink" name="section-7" href="#section-7">7</a>.  References</span>
+
+<span class="h3"><a class="selflink" name="section-7.1" href="#section-7.1">7.1</a>.  Normative References</span>
+
+   [<a name="ref-RFC4271" id="ref-RFC4271">RFC4271</a>]  Rekhter, Y., Ed., Li, T., Ed., and S. Hares, Ed., "A
+              Border Gateway Protocol 4 (BGP-4)", <a href="http://tools.ietf.org/html//rfc4271">RFC 4271</a>,
+              DOI 10.17487/RFC4271, January 2006,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc4271">https://www.rfc-editor.org/info/rfc4271</a>&gt;.
+
+   [<a name="ref-RFC4364" id="ref-RFC4364">RFC4364</a>]  Rosen, E. and Y. Rekhter, "BGP/MPLS IP Virtual Private
+              Networks (VPNs)", <a href="http://tools.ietf.org/html//rfc4364">RFC 4364</a>, DOI 10.17487/RFC4364, February
+              2006, &lt;<a href="https://www.rfc-editor.org/info/rfc4364">https://www.rfc-editor.org/info/rfc4364</a>&gt;.
+
+<span class="h3"><a class="selflink" name="section-7.2" href="#section-7.2">7.2</a>.  Informative References</span>
+
+   [<a name="ref-I-D.ietf-bess-service-chaining" id="ref-I-D.ietf-bess-service-chaining">I-D.ietf-bess-service-chaining</a>]
+              Fernando, R., Mackie, S., Rao, D., Rijsman, B., Napierala,
+              M., and T. Morin, "Service Chaining using Virtual Networks
+              with BGP VPNs", <a href="http://tools.ietf.org/html//draft-ietf-bess-service-chaining-03">draft-ietf-bess-service-chaining-03</a> (work
+              in progress), July 2017.
+
+   [<a name="ref-RFC2119" id="ref-RFC2119">RFC2119</a>]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", <a href="http://tools.ietf.org/html//bcp14">BCP 14</a>, <a href="http://tools.ietf.org/html//rfc2119">RFC 2119</a>,
+              DOI 10.17487/RFC2119, March 1997,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc2119">https://www.rfc-editor.org/info/rfc2119</a>&gt;.
+
+   [<a name="ref-RFC5226" id="ref-RFC5226">RFC5226</a>]  Narten, T. and H. Alvestrand, "Guidelines for Writing an
+              IANA Considerations Section in RFCs", <a href="http://tools.ietf.org/html//rfc5226">RFC 5226</a>,
+              DOI 10.17487/RFC5226, May 2008,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc5226">https://www.rfc-editor.org/info/rfc5226</a>&gt;.
+
+   [<a name="ref-RFC7611" id="ref-RFC7611">RFC7611</a>]  Uttaro, J., Mohapatra, P., Smith, D., Raszuk, R., and J.
+              Scudder, "BGP ACCEPT_OWN Community Attribute", <a href="http://tools.ietf.org/html//rfc7611">RFC 7611</a>,
+              DOI 10.17487/RFC7611, August 2015,
+              &lt;<a href="https://www.rfc-editor.org/info/rfc7611">https://www.rfc-editor.org/info/rfc7611</a>&gt;.
+
+
+
+
+
+
+
+
+<span class="grey">Grewal, et al.           Expires April 17, 2018                 [Page 6]</span></pre>
+<hr class='noprint' style='width: 96ex;' align='left'/><!--NewPage--><pre class='newpage'><a name="page-7" id="page-7" href="#page-7" class="invisible"> </a>
+<span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
+
+
+Authors' Addresses
+
+   Ashutosh Grewal
+   Juniper Networks
+   1133 Innovation Way
+   Sunnyvale, CA  94089
+   USA
+
+   EMail: agrewal@juniper.net
+
+
+   Nischal Seth
+   Juniper Networks
+   1133 Innovation Way
+   Sunnyvale, CA  94089
+   USA
+
+   EMail: nsheth@juniper.net
+
+
+   Kaliraj Vairavakkalai
+   Juniper Networks
+   1133 Innovation Way
+   Sunnyvale, CA  94089
+   USA
+
+   EMail: kaliraj@juniper.net
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Grewal, et al.           Expires April 17, 2018                 [Page 7]
+
+</pre><br />
+    <span class="noprint"><small><small>Html markup produced by rfcmarkup 1.124, available from
+      <a href="https://tools.ietf.org/tools/rfcmarkup/">https://tools.ietf.org/tools/rfcmarkup/</a>
+    </small></small></span>
+  </div>
+</body>
+</html>

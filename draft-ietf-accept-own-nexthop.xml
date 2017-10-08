@@ -13,93 +13,161 @@
 <?rfc compact="yes"?>
 <?rfc subcompact="no"?>
 <rfc category="std" docName="draft-agrewal-accept-own-nexthop"
-     ipr="trust200902">
-  <front>
-    <title abbrev="bgp-accept-own-nhop">BGP accept-own-nexthop community
-    attribute</title>
-
-    <author fullname="Ashutosh Grewal" initials="A." surname="Grewal">
-      <organization>Juniper Networks</organization>
-
-      <address>
-        <email>agrewal@juniper.net</email>
-      </address>
-    </author>
-
-    <author fullname="Nischal Seth" initials="N." surname="Sheth">
-      <organization>Juniper Networks</organization>
-
-      <address>
-	  <email>nsheth@juniper.net</email>
-      </address>
-    </author>
-
-    <author fullname="Kaliraj Vairavakkalai" initials="K." surname="Vairavakkalai">          
-      <organization>Juniper Networks</organization>                             
-                                                                                
-      <address>                                                                 
-        <email>kaliraj@juniper.net</email>                                      
-      </address>                                                                
-    </author> 
-
-    <date year="2017"/>
-
-    <workgroup>IDR</workgroup>
-
-    <abstract>
-	<t>Allowing a Controller to re-originate Border Gateway Portocol (BGP) Virtual
-	    Private Network (VPN) route helps it steer traffic through a given
-	    path. This technique works effectively as long as the </t>
-    </abstract>
-
-    <note title="Requirements Language">
-      <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-      "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-      document are to be interpreted as described in RFC2119.</t>
-    </note>
-  </front>
-
-  <middle>
-    <section title="Introduction">
-
-      <t>This document discusses how multicast works with RMRs.</t>
-
-      <t>
-        The BGP ACCEPT_OWN Community Attribute standard [RFC7611] 
-        defined a technique to let the route reflector modify the RT list of
-        a VPN route and redistribute it back to the originating PE. This enables
-        the route reflector to control how a route originated within one VRF
-        at the PE is imported into other VRFs at the originating PE. However, 
-        the ACCEPT_OWN standard does not specify how the forwarding state
-        next-hop for an accepted route is derived. It seems that once the 
-        the source VRF is located, we'll find the original route for this
-        prefix in this source VRF and use the next-hop information of the 
-        original route as the forwarding state for the received route.
-	The standard also mandates that the route received from the route
-        reflector be orginated by a source VRF on the receiving router
-	(Section 2.1 of BGP ACCEPT_OWN Community Attribute standard).
-      </t>
-
-      <t>This documnent proposes a new community BGP accept-own-nexthop whose
-         usage means - 'accept a route with one's own next-hop (regardless of
-         whether the route was originated by the PE). Doing so, enables some new
-        useful use cases. The scope of this community does not mandate the
-	route be originated by a source VRF on the receiving router as was the
-	case in BGP ACCEPT_OWN community attribute. Also, the usage of this
-	community does not prescribe how the forwarding next-hop of such a
-	a route is derived. 
-      </t>
-    </section>
-
-    <section title="Layer 2 physical network function in a service chain">
-<t><figure>                                                             
-            <artwork><![CDATA[                 
+    ipr="trust200902">
+    <front>
+        <title abbrev="bgp-accept-own-nhop">BGP accept-own-nexthop community
+            attribute</title>
+        
+        <author fullname="Ashutosh Grewal" initials="A." surname="Grewal">
+            <organization>Juniper Networks</organization>
+            <address>
+                <postal>
+                    <street>1133 Innovation Way</street>
+                    <city>Sunnyvale</city>
+                    <region>CA</region>
+                    <code>94089</code>
+                    <country>USA</country>
+                </postal>
+                <email>agrewal@juniper.net</email>
+            </address>
+        </author>
+        
+        <author fullname="Nischal Seth" initials="N." surname="Sheth">
+            <organization>Juniper Networks</organization>
+            
+            <address>
+                <postal>
+                    <street>1133 Innovation Way</street>
+                    <city>Sunnyvale</city>
+                    <region>CA</region>
+                    <code>94089</code>
+                    <country>USA</country>
+                </postal>
+                <email>nsheth@juniper.net</email>
+            </address>
+        </author>
+        
+        <author fullname="Kaliraj Vairavakkalai" initials="K." surname="Vairavakkalai">
+            <organization>Juniper Networks</organization>
+            
+            <address>
+                <postal>
+                    <street>1133 Innovation Way</street>
+                    <city>Sunnyvale</city>
+                    <region>CA</region>
+                    <code>94089</code>
+                    <country>USA</country>
+                </postal>
+                <email>kaliraj@juniper.net</email>
+            </address>
+        </author>
+        
+        <date day="14" month="October" year="2017" />
+        
+        <workgroup>IDR</workgroup>
+        
+        <abstract>
+            <t>
+                Various Service chain techniques utilize a Controller to
+                inject Border Gateway Protocol (BGP) Virtual Private Network
+                (VPN) routes to help steer traffic through a given path. The
+                Controller does so by controlling how these VPN routes are
+                imported into various Virtual Routing and Forwarding (VRF) tables at
+                routers along the desired path. A couple of such approaches are
+                specified in <xref target="I-D.ietf-bess-service-chaining"/>.
+                These approaches rely on the Controller modifying the Route
+                Target (RT) list and next-hop of a VPN route received from a
+                downstream router and redistributing these modified routes to
+                upstream routers. This is done such that -
+                <list style="symbols" hangIndent="1">
+                    <t>
+                        routes originated by an ingress VRF at the downstream
+                        router are imported into the egress VRF at the
+                        immediately preceding upstream router.
+                    
+                    </t>
+                    <t>
+                        next-hop advertised to the upstream router is the address
+                        of the immediately succeeding downstream router.
+                    </t>
+                </list>
+                This forces the traffic to flow through a sequence of network
+                functions creating a service chain.
+            </t>
+            
+            <t>
+                This works fine as long as the VRF importing the route received
+                from the Controller is on a different router than the VRF
+                that originally exporting the route to the Controller. This is
+                because BGP protocol [RFC4271] specifies that a router reject
+                routes received with it's own next-hop. This document proposes
+                a new community the reception of which relaxes this particular
+                rule in the BGP protocol standard and describes at least one way
+                of how next-hops of such routes could be resolved.
+            </t>
+        </abstract>
+        
+        <note title="Requirements Language">
+            <t>
+                The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+                "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
+                "OPTIONAL" in this document are to be interpreted as described
+                in [RFC2119].
+            </t>
+        </note>
+    </front>
+    
+    <middle>
+        <section title="Introduction">
+            <t>
+                The BGP ACCEPT_OWN Community Attribute standard [RFC7611]
+                defined a technique to let the route reflector modify the RT
+                list of a VPN route and redistribute it back to the originating
+                Provider Edge (PE). This enables the route reflector to control
+                how a route originated within one VRF at the PE is imported into
+                other VRFs at the originating PE. However, the ACCEPT_OWN
+                standard does not specify how the forwarding state next-hop for
+                an accepted route is derived. It is understood that once the
+                source VRF is located, the original route for this prefix in this
+                source VRF is located and the next-hop information of the
+                original route is used as the forwarding state for the received
+                route. The standard also mandates that the route received from
+                the route reflector be originated by a source VRF on the
+                receiving router.
+            </t>
+            
+            <t>
+                This document proposes a new community BGP accept-own-nexthop
+                whose usage means - 'accept a route with one's own next-hop'
+                (regardless of whether the route was originated by the PE).
+                Doing so, enables some new useful use cases. The scope of this
+                community does not mandate the route be originated by a source
+                VRF on the receiving router as was the case in BGP ACCEPT_OWN
+                community attribute. Also, the usage of this community does not
+                specify how the forwarding next-hop of such a route is derived.
+                One way to obtain the forwarding information of the received
+                route is described.
+            </t>
+        </section>
+        
+        <section title="Use Case">
+            <t>
+                Let us walk through an example of how a router could redirect
+                traffic that it is receiving in the Ingress VRF, towards a Layer
+                2 Physical Network Function (PNF) before the traffic exits this
+                router. A gateway in the form of a router is necessary to have
+                Layer 2 PNFs become part of a service chain.
+            </t>
+            
+            <t>
+                <figure>
+                    <artwork><![CDATA[
 
              +--------------------------------------+ 
              | Layer 2 Physical network function    | 
              +-------------^------------|-----------+ 
                            |            |              
-           		   |		|
+                           |            |
                            |            |
            +---------------|------------|---------------+
            |               |            |               | 
@@ -108,114 +176,140 @@
            |       +-->  in-VRF |  | out-VRF ---+       |
            |       |  |         |  |         |  |       |
            |       |  +---------+  +---------+  |       |
-           |       |			        |	| 
+           |       |                            |       |
            |  +----|----+                  +----v----+  |
            |  | Ingress |                  | Egress  |  |
-     --------->  VRF    |		   |   VRF   ---------> 
-	   |  |         |		   |         |  |
+     --------->  VRF    |                  |   VRF   --------->
+           |  |         |                  |         |  |
            |  +---------+                  +---------+  |
-           |						| 
-           |                Routing System     		| 
+           |                                            |
+           |                   Router                   |
            +--------------------------------------------+
                                                                                 
-	   Figure 1: A Layer 2 PNF as part of service chain]]></artwork>                    
-          </figure></t>   
-      <t>
-      For example, in the service chaining scenario - a PE (Fig. 1) could be
-      advertising a static route, configured inside a VRF (service in-VRF),
-      whose next-hop is the interface that a (transparent layer-2) service
-      instance (viz., firewall, ant-virus system etc.) is connected to.
-	The prefix for this route is an address that also belongs to the same
-	subnet as this interface's address. The destination address will be
-	in a different vrf (Service out-VRF) at the PE itself where the serviced
-	traffic coming from the service will be received.
-	</t>
-
-	<t>
-	    PE will advertise this route with next-hop as itself and a label
-	    that identifies the interface that the service is connected to.
-	</t>
-
-	<t>
-	    A controller acting as an extended route reflector could now steer
-	    the traffic for a particular destination - for which the controller
-	    wants the traffic to be serviced - by sending a VPN route for that
-	    destination, with
-	    PE's own address as the next-hop and the above label. The RT attached
-	    to such a route would allow it to be imported to the Ingress VRF.
-	    Such a route
-	    will be resolved using the received VPN label to point to whatever next-hop 
-	    information that is assosciated with this label. A controller may create
-	    multiple such VRFs on the PE and following the above procedure for
-	    each service to construct a service chain by advertising route with
-	    different RTs for the ssame destination prefix with different labels,
-	    where each label is identify the interface towards that particular
-	    serivce.
-	</t>
-
-    </section>
-    <section title="accept-own-nexthop community">
-	<t>
-	    This memo defines accept-own-nexthop, a new well-known BGP community
-	    in the First Come First Servied [RFC5226] range, whose value as 
-	    assigned by IANA is 0XFFF008. Processing of accept-own-nexthop is
-	    controlled by configuration. The functionality SHOULD default to
-	    being disabled, as further specifed in Section 3.2. 
-	</t>
-	<section title="Route Acceptance">
-	    <t>
-		A router May accept a route whose NEXT_HOP value matches that
-		of the receiving speaker if all of the following are true:
-		* Processing of the accept-own-nexthop community is enabled by
-		configuration.
-		* The route in question carries the accept-own-nexthop community.
-		* The route in question is targeted to one or more destination
-		VRFs on the router (as determined by inspecting the Route 
-		Target(s)).
-	    </t>
-	</section>
-	<section title="Configuration Control">
-	    <t>
-		accept-own-nexthop hanlding is controlled by configuration. The
-		default configuration action is to have this disabled. 
-	    </t>
-	</section>
-    </section>
-	 
-    <section title="IANA Considerations">
-	<t>
-	  IANA has assigned the value 0xFFFF0008 in the "BGP Well-known
-	  Communities" registry for the accept-own-nexthop community.
-      </t>
-    </section>
-
-    <section anchor="Security" title="Security Considerations">
-	<t> accept-own-nexthop as described in this document permits a router's 
-	own route prefix to be advertised to a different VRF on that router. In 
-	this respect, such a route is similar to any other BGP route and shares
-	the same set of security vulnerabilities and concerns.  This
-	extension does not change the underlying security issues inherent in
-	BGP VPN [RFC4364].</t>
-    </section>
-
-    <section anchor="Acknowledgements" title="Acknowledgements">
-	<t>The authors would like to thank Minto Jeyananth, John Scudder and Jeff Haas 
-	for their valuable comments and suggestions.  
-	</t>
-    </section>
-  </middle>
-
-  <back>
-    <references title="Normative References">
-      <?rfc include='reference.RFC.7611'?>
-
-      <?rfc include='reference.RFC.4364'?>
-
-    </references>
-
-    <references title="Informative References">
-      <?rfc include='reference.RFC.5226'?>
-
-    </references>
-  </back>
+	   Figure 1: A Layer 2 PNF as part of service chain]]>
+                    </artwork>
+                </figure>
+            </t>
+            
+            <t>
+                In the service chaining scenario involving a Layer 2 PNF - a PE
+                (Fig. 1) advertises a static route - configured inside a VRF
+                (service in-VRF) - whose next-hop is the interface that a
+                (transparent layer-2) service instance (viz., firewall,
+                ant-virus system etc.) is connected to. The prefix for this
+                route is an address that also belongs to the same subnet as this
+                interface's address. The destination address will be in a
+                different vrf (Service out-VRF) at the PE itself where the
+                serviced traffic coming from the service will be received.
+            </t>
+            
+            <t>
+                PE will advertise this route with next-hop as itself and a label
+                that identifies the interface that the service is connected to.
+            </t>
+            
+            <t>
+                A Controller acting as an extended route reflector could now
+                steer the traffic for a particular destination - for which the
+                controller wants the traffic to be serviced - by sending a
+                VPN route for that destination, with PE's own address as the
+                next-hop and the above label. The RT that Controller attaches to
+                such a route would allow it to be imported to the Ingress VRF.
+                Such a route will be resolved using the received VPN label to
+                point to whatever next-hop information that is associated with
+                this label locally. A controller may create multiple such service
+                VRFs on the PE and follow the above procedure for each service to
+                construct a service chain by advertising route with different RTs
+                for the same destination prefix with different labels, where each
+                label identifies the interface towards that particular service.
+            </t>
+        </section>
+        
+        <section title="accept-own-nexthop community">
+            <t>
+                A new well-known BGP community in the First Come First Served
+                [RFC5226] range called accept-own-nexthop has been assigned
+                value of 0XFFF008 by IANA.
+            </t>
+            
+            <section title="New BGP behavior">
+                <t>
+                    A change to default BGP behavior is proposed such that a
+                    router that receives a route whose NEXT_HOP value matches
+                    one of the addresses configured on itself MAY accept the
+                    route if the following are true:
+                    <list style="symbols" hangIndent="1">
+                        <t>
+                            The route in question carries the accept-own-nexthop
+                            community.
+                        </t>
+                        <t>
+                            Processing of the accept-own-nexthop community is
+                            enabled by configuration.
+                        </t>
+                    </list>
+                </t>
+            </section>
+            
+            <section title="Configuration Control">
+                <t>
+                    The processing - as defined above - of accept-own-nexthop
+                    community is disabled by default. An implementation SHOULD
+                    provide a configuration syntax to enable a router to
+                    activate the behavior specified in this document.
+                </t>
+            </section>
+        </section>
+        
+        <section title="IANA Considerations">
+            <t>
+                IANA has assigned the value 0xFFFF0008 in the "BGP Well-known
+                Communities" registry for the accept-own-nexthop community.
+            </t>
+        </section>
+        
+        
+        <section anchor="Security" title="Security Considerations">
+            <t>
+                accept-own-nexthop community allows a router to accept a route
+                with it's own next-hop. If the originator of that route is that
+                router itself and if the router accepts the route advertised
+                by controller to the same VRF from where it was originated and
+                this new route is more preferable than the original route,
+                route oscillations could happen. The receiving router
+                preferring the route received form the controller would lead to
+                it withdrawing the original route. This will prompt the Controller
+                to withdraw the re-originated router. This in turn will prompt
+                the PE to re-advertise the original route and the cycle would
+                continue.
+            </t>
+            <t>
+                Since these routes are like any other BGP VPN route, all the
+                vulnerabilities applicable to any other BGP VPN route are also
+                applicable to these routes. Such vulnerabilities for BGP VPN
+                routes have been described in [RFC4364].
+            </t>
+        </section>
+        
+        <section anchor="Acknowledgements" title="Acknowledgements">
+            <t>
+                The authors would like to thank John Scudder, Jeff Haas and
+                Minto Jeyanatha for their valuable comments and suggestions.
+            </t>
+        </section>
+    </middle>
+    
+    <back>
+        <references title="Normative References">
+            <?rfc include='reference.RFC.4271'?>
+            <?rfc include='reference.RFC.4364'?>
+        </references>
+        
+        <references title="Informative References">
+            <?rfc include='reference.RFC.7611'?>
+            <?rfc include='reference.I-D.ietf-bess-service-chaining'?>
+            <?rfc include='reference.RFC.5226'?>
+            <?rfc include='reference.RFC.2119'?>
+        </references>
+    </back>
 </rfc>
