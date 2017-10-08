@@ -379,10 +379,10 @@ Table of Contents
    belongs to the same subnet as this interface's address.  The
    destination address will be in a different vrf (Service out-VRF) at
    the PE itself where the serviced traffic coming from the service will
-   be received.
+   be received to be sent to it's destination.
 
    PE will advertise this route with next-hop as itself and a label that
-   identifies the interface that the service is connected to.
+   identifies the interface on the PE that the service is connected to.
 
    A Controller acting as an extended route reflector could now steer
    the traffic for a particular destination - for which the controller
@@ -402,7 +402,7 @@ Table of Contents
 <span class="grey">Internet-Draft             bgp-accept-own-nhop              October 2017</span>
 
 
-   service chain by advertising route with different RTs for the same
+   service chain by advertising routes with different RTs for the same
    destination prefix with different labels, where each label identifies
    the interface towards that particular service.
 
@@ -441,8 +441,8 @@ Table of Contents
    accept-own-nexthop community allows a router to accept a route with
    it's own next-hop.  If the originator of that route is that router
    itself and if the router accepts the received route to the same VRF
-   from where it was originated and if this new route is more preferable
-   than the original route, route oscillations would happen.  That is so
+   from where it was originated route oscillations would happen if this
+   new route is more preferable than the original route.  That is so
    because the receiving router preferring the received route would lead
    to it withdrawing its advertisement for the original route.  This
    will prompt the Controller to withdraw the re-originated route.  This
