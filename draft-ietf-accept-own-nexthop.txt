@@ -290,7 +290,7 @@ Internet-Draft             bgp-accept-own-nhop              October 2017
 6.  Acknowledgements
 
    The authors would like to thank John Scudder, Jeff Haas and Minto
-   Jeyanatha for their valuable comments and suggestions.
+   Jeyanath for their valuable comments and suggestions.
 
 7.  References
 
@@ -349,7 +349,7 @@ Authors' Addresses
    EMail: agrewal@juniper.net
 
 
-   Nischal Seth
+   Nischal Sheth
    Juniper Networks
    1133 Innovation Way
    Sunnyvale, CA  94089

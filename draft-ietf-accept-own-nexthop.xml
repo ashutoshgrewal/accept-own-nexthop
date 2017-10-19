@@ -32,7 +32,7 @@
             </address>
         </author>
         
-        <author fullname="Nischal Seth" initials="N." surname="Sheth">
+        <author fullname="Nischal Sheth" initials="N." surname="Sheth">
             <organization>Juniper Networks</organization>
             
             <address>
@@ -298,7 +298,7 @@
         <section anchor="Acknowledgements" title="Acknowledgements">
             <t>
                 The authors would like to thank John Scudder, Jeff Haas and
-                Minto Jeyanatha for their valuable comments and suggestions.
+                Minto Jeyanath for their valuable comments and suggestions.
             </t>
         </section>
     </middle>
